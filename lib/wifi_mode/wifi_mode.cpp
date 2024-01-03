@@ -10,10 +10,8 @@ const char *stations[][2] = {
     {"Bluetooth",""}
 };
 
-int wifi_config(){
-    return(0);
+void wifi_config(){
 };
 
-int wifi_loop(){
-    return(0);
+void wifi_loop(){
 };

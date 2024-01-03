@@ -5,5 +5,5 @@ void disp_bt_on_enter();
 void disp_mode_on_enter();
 void reboot_on_enter();
 
-int A2DP_config();
-int A2DP_loop();
+void A2DP_config();
+void A2DP_loop(int trigger);

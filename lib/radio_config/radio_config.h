@@ -1,40 +1,44 @@
+#ifndef _RADIO_CONFIG_
+#define _RADIO_CONFIG_
+
+#include <Arduino.h>
 #include <Bounce2.h>
 #include <ArduinoNvs.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <Fsm.h>
 
-//Define mode names
-
-extern const char *WIFI_MODE;
-extern const char *CONF_MODE;
-extern const char *A2DP_MODE;
-extern const char *MENU_MODE;
-
-//Declare station list
-extern const char *stations[][2];
-
-//declare LCD
+//Declare LCD
 extern LiquidCrystal_I2C lcd;
 
-//Buttons
-extern Bounce scroll;
-extern const int SCROLL_TRIG;
-extern Bounce enter;
-extern const int ENTER_TRIG;
+//Define mode names
+constexpr const char* CONF_MODE = "conf_mode";
+constexpr const char* A2DP_MODE = "A2DP_mode";
+constexpr const char* MENU_MODE = "menu_mode";
+constexpr const char* WIFI_MODE = "wifi_mode";
 
-//WiFi credentials
-extern const char* ssid;
-extern const char* password;
-extern const int NUM_STATIONS;
-extern const int bt_station;
-extern const char* BT_name;
+//Declare BT name
+constexpr const char* BT_name = "ESP32_BT";
+
+//WiFi Stuff station list
+/*
+constexpr char *stations[][2];
+constexpr int NUM_STATIONS;
+constexpr char* ssid;
+constexpr char* password;
+*/
+
+//Buttons
+constexpr int SCROLL_TRIG = 1;
+constexpr int SCROLL_PIN = 14;
+constexpr int ENTER_TRIG = 2;
+constexpr int ENTER_PIN = 13;
 
 //define pins
-extern const int I2S_DOUT;
-extern const int I2S_BCLK;
-extern const int I2S_LRC;
-extern const int I2C_SDA;
-extern const int I2C_SCL;
-extern const int SCROLL;
-extern const int ENTER;
+constexpr int I2S_BCLK = 19;
+constexpr int I2S_DOUT = 18;
+constexpr int I2S_LRC = 5;
+constexpr int I2C_SDA = 32;
+constexpr int I2C_SCL = 33;
+
+#endif
