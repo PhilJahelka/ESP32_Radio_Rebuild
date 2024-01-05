@@ -7,7 +7,7 @@ void disp_mode_on_enter()
 }
 void reboot_on_enter()
 {
-    NVS.setString("boot_mode", String(MENU_MODE));
+    NVS.setString(NVS_MODE, String(MENU_MODE));
     Serial.println("Booting into menu mode");
     ESP.restart();
 }

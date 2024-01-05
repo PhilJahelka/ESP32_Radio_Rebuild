@@ -13,22 +13,32 @@ extern hd44780_I2Cexp lcd;
 constexpr int LCD_COLS = 16;
 constexpr int LCD_ROWS = 2;
 
+//NVS names
+constexpr char NVS_MODE[] = "boot_mode";
+constexpr char NVS_SSID[] = "SSID";
+constexpr char NVS_PSWD[] = "PSWD";
+constexpr char NVS_STAT[] = "STAT";
+
+
 //Declare common FSM states and entries
 void disp_mode_on_enter();
 void reboot_on_enter();
 extern State state_disp_mode;
 extern State state_reboot;
 
+//force boot to menu mode
+void force_menu_boot();
+
 
 
 //Define mode names
-constexpr const char* CONF_MODE = "conf_mode";
-constexpr const char* A2DP_MODE = "A2DP_mode";
-constexpr const char* MENU_MODE = "menu_mode";
-constexpr const char* WIFI_MODE = "wifi_mode";
+constexpr char CONF_MODE[] = "conf_mode";
+constexpr char A2DP_MODE[] = "A2DP_mode";
+constexpr char MENU_MODE[] = "menu_mode";
+constexpr char WIFI_MODE[] = "wifi_mode";
 
 //Declare BT name
-constexpr const char* BT_NAME = "ESP32_BT";
+constexpr const char BT_NAME[] = "ESP32_BT";
 
 //WiFi Stuff station list
 /*

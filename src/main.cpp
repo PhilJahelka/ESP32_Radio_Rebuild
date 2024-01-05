@@ -5,7 +5,7 @@ Have setup first detect which mode to boot into and then configure the board app
 #include <radio_config.h>
 //the individual modes for the ESP32 to boot into
 #include <A2DP_mode.h>
-//#include <wifi_mode.h>
+#include <wifi_mode.h>
 #include <menu_mode.h>
 #include <conf_mode.h>
 
@@ -46,7 +46,7 @@ void setup() {
   // Read boot option
   NVS.begin();
   Serial.println("Started NVS");
-  read_boot_mode = NVS.getString("boot_mode");
+  read_boot_mode = NVS.getString(NVS_MODE);
   Serial.println("Read NVS");
   Serial.println(read_boot_mode);
   /* if ( read_boot_mode == String(WIFI_MODE) )
@@ -69,16 +69,8 @@ void setup() {
   {
     Serial.println("Booted Into Invalid Mode");
     lcd.print("Bad Boot Mode");
-    lcd.setCursor(0, 1);
-    lcd.print("Boot Into Menu");
-    delay(3000);
-    bool NVS_status = NVS.setString("boot_mode", String(MENU_MODE));
-    if (NVS_status == false){
-      Serial.println("mode write broken");
-    }
-    Serial.print("wrote mode: ");
-    Serial.println(MENU_MODE);
-    ESP.restart();
+    delay(1000);
+    force_menu_boot();
   }
 }
 
@@ -116,9 +108,20 @@ void loop(){
   {
     Serial.println("Loop In Invalid Mode");
     lcd.print("Bad Loop Mode");
-    lcd.setCursor(0, 1);
-    lcd.print("Boot Into Menu");
-    delay(3000);
-    //init to Menu
+    delay(1000);
+    force_menu_boot();
   }
+}
+
+void force_menu_boot(){
+  lcd.clear();
+  lcd.print("Boot Into Menu");
+  delay(1000);
+  bool NVS_status = NVS.setString(NVS_MODE, String(MENU_MODE));
+  if (NVS_status == false){
+    Serial.println("mode write broken");
+  }
+  Serial.print("wrote mode: ");
+  Serial.println(MENU_MODE);
+  ESP.restart();
 }

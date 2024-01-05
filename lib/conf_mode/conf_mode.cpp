@@ -33,7 +33,7 @@ class SSIDCallback: public NimBLECharacteristicCallbacks {
       if (rxValue.length() > 0) {
         Serial.print("New SSID: ");
         Serial.println(rxValue);
-        NVS.setString("SSID", rxValue);
+        NVS.setString(NVS_SSID, rxValue);
       }
     }
 };
@@ -44,7 +44,7 @@ class PSWDCallback: public NimBLECharacteristicCallbacks {
       if (rxValue.length() > 0) {
         Serial.print("New Password: ");
         Serial.println(rxValue);
-        NVS.setString("PSWD", rxValue);
+        NVS.setString(NVS_PSWD, rxValue);
       }
     }
 };
@@ -55,7 +55,7 @@ class STATCallback: public NimBLECharacteristicCallbacks {
       if (rxValue.length() > 0) {
         Serial.print("New Custom Station: ");
         Serial.println(rxValue);
-        NVS.setString("STAT", rxValue);
+        NVS.setString(NVS_STAT, rxValue);
       }
     }
 };
@@ -92,21 +92,21 @@ void conf_config() {
 											NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE
 										);
     pSSIDCharacteristic->setCallbacks(new SSIDCallback());
-    pSSIDCharacteristic->setValue( NVS.getString("SSID") );
+    pSSIDCharacteristic->setValue( NVS.getString(NVS_SSID) );
   
     NimBLECharacteristic * pPSWDCharacteristic = pService->createCharacteristic(
 											CHARACTERISTIC_UUID_PSWD,
 											NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE
 										);
     pPSWDCharacteristic->setCallbacks(new PSWDCallback());
-    pPSWDCharacteristic->setValue( NVS.getString("PSWD") );
+    pPSWDCharacteristic->setValue( NVS.getString(NVS_PSWD) );
 
     NimBLECharacteristic * pSTATCharacteristic = pService->createCharacteristic(
 											CHARACTERISTIC_UUID_STAT,
 											NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE
 										);
     pSTATCharacteristic->setCallbacks(new STATCallback());
-    pSTATCharacteristic->setValue( NVS.getString("STAT") );
+    pSTATCharacteristic->setValue( NVS.getString(NVS_STAT) );
 
     //Create Descriptors to label characteristics and credentials and their desired formats as UTF-8
     NimBLEDescriptor* pSSIDDescriptor_name = pSSIDCharacteristic->createDescriptor(DESCRIPTOR_UUID_NAME, NIMBLE_PROPERTY::READ);
