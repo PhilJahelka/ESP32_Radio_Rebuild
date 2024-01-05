@@ -1,15 +1,25 @@
-#ifndef _RADIO_CONFIG_
-#define _RADIO_CONFIG_
+#pragma once
 
 #include <Arduino.h>
 #include <Bounce2.h>
 #include <ArduinoNvs.h>
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_I2Cexp.h>
 #include <Fsm.h>
 
 //Declare LCD
-extern LiquidCrystal_I2C lcd;
+extern hd44780_I2Cexp lcd;
+constexpr int LCD_COLS = 16;
+constexpr int LCD_ROWS = 2;
+
+//Declare common FSM states and entries
+void disp_mode_on_enter();
+void reboot_on_enter();
+extern State state_disp_mode;
+extern State state_reboot;
+
+
 
 //Define mode names
 constexpr const char* CONF_MODE = "conf_mode";
@@ -18,7 +28,7 @@ constexpr const char* MENU_MODE = "menu_mode";
 constexpr const char* WIFI_MODE = "wifi_mode";
 
 //Declare BT name
-constexpr const char* BT_name = "ESP32_BT";
+constexpr const char* BT_NAME = "ESP32_BT";
 
 //WiFi Stuff station list
 /*
@@ -40,5 +50,3 @@ constexpr int I2S_DOUT = 18;
 constexpr int I2S_LRC = 5;
 constexpr int I2C_SDA = 32;
 constexpr int I2C_SCL = 33;
-
-#endif

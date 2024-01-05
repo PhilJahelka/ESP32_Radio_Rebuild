@@ -1,3 +1,5 @@
+#include <wifi_mode.h>
+
 const int NUM_STATIONS = 7;
 
 const char *stations[][2] = {

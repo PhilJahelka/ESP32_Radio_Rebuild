@@ -7,13 +7,16 @@ Have setup first detect which mode to boot into and then configure the board app
 #include <A2DP_mode.h>
 //#include <wifi_mode.h>
 #include <menu_mode.h>
+#include <conf_mode.h>
 
-LiquidCrystal_I2C lcd(0x27, 20, 4);
-
+//create buttons
 Bounce scroll = Bounce();
 Bounce enter = Bounce();
-
+//boot mode read from flash
 String read_boot_mode;
+
+hd44780_I2Cexp lcd(0x27);
+int lcd_status;
 
 void setup() {
   // Debugging output
@@ -33,7 +36,11 @@ void setup() {
   enter.interval(100);
   // Setup display
   Wire.begin(I2C_SDA, I2C_SCL);
-  lcd.init();
+  lcd_status = lcd.begin(LCD_COLS, LCD_ROWS);
+  if (lcd_status)
+  {
+    hd44780::fatalError(lcd_status);
+  }
   lcd.backlight();
   lcd.clear();
   // Read boot option
@@ -42,17 +49,17 @@ void setup() {
   read_boot_mode = NVS.getString("boot_mode");
   Serial.println("Read NVS");
   Serial.println(read_boot_mode);
-  if ( read_boot_mode == String(WIFI_MODE) )
+  /* if ( read_boot_mode == String(WIFI_MODE) )
   {
-    //wifi_config();
+    wifi_config();
   } 
-  else if ( read_boot_mode == String(A2DP_MODE) )
+  else  */if ( read_boot_mode == String(A2DP_MODE) )
   {
     A2DP_config();
   }
   else if ( read_boot_mode == String(CONF_MODE) )
   {
-    //init config
+    conf_config();
   }
   else if ( read_boot_mode == String(MENU_MODE) )
   {
@@ -89,17 +96,17 @@ void loop(){
       Serial.println("caught enter");
       pressed_button = ENTER_TRIG;
   }
-  if ( read_boot_mode == String(WIFI_MODE) )
+  /* if ( read_boot_mode == String(WIFI_MODE) )
   {
     //wifi_config();
   } 
-  else if ( read_boot_mode == String(A2DP_MODE) )
+  else  */if ( read_boot_mode == String(A2DP_MODE) )
   {
     A2DP_loop(pressed_button);
   }
   else if ( read_boot_mode == String(CONF_MODE) )
   {
-    //init config
+    conf_loop(pressed_button);
   }
   else if ( read_boot_mode == String(MENU_MODE) )
   {

@@ -1,6 +1,4 @@
 #include <menu_mode.h>
-#include <Fsm.h>
-#include <radio_config.h>
 //define states
 
 State state_disp_bt_mode(&disp_bt_mode_on_enter, NULL, NULL);
@@ -34,19 +32,19 @@ void disp_conf_mode_on_enter()
 }
 void bt_boot_on_enter()
 {
-    NVS.setString("boot_mode", A2DP_MODE);
+    NVS.setString("boot_mode", String(A2DP_MODE));
     Serial.println("Booting into BT mode");
     ESP.restart();
 }
 void wifi_boot_on_enter()
 {
-    NVS.setString("boot_mode", WIFI_MODE);
+    NVS.setString("boot_mode", String(WIFI_MODE));
     Serial.println("Booting into WiFi mode");
     ESP.restart();
 }
 void conf_boot_on_enter()
 {
-    NVS.setString("boot_mode", CONF_MODE);
+    NVS.setString("boot_mode", String(CONF_MODE));
     Serial.println("Booting into WiFi Config mode");
     ESP.restart();
 }

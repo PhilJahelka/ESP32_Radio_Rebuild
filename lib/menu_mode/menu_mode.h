@@ -1,3 +1,5 @@
+#include <radio_config.h>
+
 void disp_bt_mode_on_enter();
 void disp_wifi_mode_on_enter();
 void disp_conf_mode_on_enter();
