@@ -1,0 +1,52 @@
+Date : 2024-01-06 09:49:54
+Directory : c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild
+Total : 16 files,  641 codes, 88 comments, 77 blanks, all 806 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C++      |         11 |        613 |         77 |         70 |        760 |
+| Ini      |          1 |         18 |          9 |          2 |         29 |
+| cmake    |          2 |          5 |          2 |          4 |         11 |
+| CSV      |          1 |          4 |          0 |          0 |          4 |
+| Markdown |          1 |          1 |          0 |          1 |          2 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                  | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                     |         16 |        641 |         88 |         77 |        806 |
+| . (Files)                                                                                             |          4 |         26 |          9 |          4 |         39 |
+| lib                                                                                                   |         10 |        505 |         63 |         65 |        633 |
+| lib\A2DP_mode                                                                                         |          2 |         46 |          5 |          7 |         58 |
+| lib\conf_mode                                                                                         |          2 |        124 |         18 |         24 |        166 |
+| lib\menu_mode                                                                                         |          2 |         80 |          5 |          5 |         90 |
+| lib\radio_config                                                                                      |          2 |         48 |         15 |         15 |         78 |
+| lib\wifi_mode                                                                                         |          2 |        207 |         20 |         14 |        241 |
+| src                                                                                                   |          2 |        110 |         16 |          8 |        134 |
++-------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                              | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\CMakeLists.txt                    | cmake    |          3 |          0 |          1 |          4 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\README.md                         | Markdown |          1 |          0 |          1 |          2 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\A2DP_mode\A2DP_mode.cpp       | C++      |         39 |          5 |          5 |         49 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\A2DP_mode\A2DP_mode.h         | C++      |          7 |          0 |          2 |          9 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\conf_mode\conf_mode.cpp       | C++      |        120 |         18 |         23 |        161 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\conf_mode\conf_mode.h         | C++      |          4 |          0 |          1 |          5 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\menu_mode\menu_mode.cpp       | C++      |         71 |          5 |          3 |         79 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\menu_mode\menu_mode.h         | C++      |          9 |          0 |          2 |         11 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\radio_config\radio_config.cpp | C++      |         14 |          0 |          2 |         16 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\radio_config\radio_config.h   | C++      |         34 |         15 |         13 |         62 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\wifi_mode\wifi_mode.cpp       | C++      |        194 |         19 |         11 |        224 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\lib\wifi_mode\wifi_mode.h         | C++      |         13 |          1 |          3 |         17 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\platformio.ini                    | Ini      |         18 |          9 |          2 |         29 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\radio_partitions.csv              | CSV      |          4 |          0 |          0 |          4 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\src\CMakeLists.txt                | cmake    |          2 |          2 |          3 |          7 |
+| c:\Users\pjahelka\Documents\PlatformIO\Projects\ESP32_Radio_Rebuild\src\main.cpp                      | C++      |        108 |         14 |          5 |        127 |
+| Total                                                                                                 |          |        641 |         88 |         77 |        806 |
++-------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

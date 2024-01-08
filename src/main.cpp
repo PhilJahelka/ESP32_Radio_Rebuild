@@ -4,10 +4,10 @@ Have setup first detect which mode to boot into and then configure the board app
 //radio_config contains all the needed declarations for hardware passing stuff to mode libraries
 #include <radio_config.h>
 //the individual modes for the ESP32 to boot into
-#include <A2DP_mode.h>
+//#include <A2DP_mode.h>
 #include <wifi_mode.h>
-#include <menu_mode.h>
-#include <conf_mode.h>
+//#include <menu_mode.h>
+//#include <conf_mode.h>
 
 //create buttons
 Bounce scroll = Bounce();
@@ -41,6 +41,7 @@ void setup() {
   {
     hd44780::fatalError(lcd_status);
   }
+  Serial.println("began lcd");
   lcd.backlight();
   lcd.clear();
   // Read boot option
@@ -49,11 +50,11 @@ void setup() {
   read_boot_mode = NVS.getString(NVS_MODE);
   Serial.println("Read NVS");
   Serial.println(read_boot_mode);
-  /* if ( read_boot_mode == String(WIFI_MODE) )
+  if ( read_boot_mode == String(WIFI_MODE) )
   {
     wifi_config();
   } 
-  else  */if ( read_boot_mode == String(A2DP_MODE) )
+  /* else if ( read_boot_mode == String(A2DP_MODE) )
   {
     A2DP_config();
   }
@@ -64,7 +65,7 @@ void setup() {
   else if ( read_boot_mode == String(MENU_MODE) )
   {
     menu_config();
-  }
+  } */
   else
   {
     Serial.println("Booted Into Invalid Mode");
@@ -88,11 +89,11 @@ void loop(){
       Serial.println("caught enter");
       pressed_button = ENTER_TRIG;
   }
-  /* if ( read_boot_mode == String(WIFI_MODE) )
+  if ( read_boot_mode == String(WIFI_MODE) )
   {
-    //wifi_config();
+    wifi_loop(pressed_button);
   } 
-  else  */if ( read_boot_mode == String(A2DP_MODE) )
+  /* else if ( read_boot_mode == String(A2DP_MODE) )
   {
     A2DP_loop(pressed_button);
   }
@@ -103,7 +104,7 @@ void loop(){
   else if ( read_boot_mode == String(MENU_MODE) )
   {
     menu_loop(pressed_button);
-  }
+  } */
   else
   {
     Serial.println("Loop In Invalid Mode");
