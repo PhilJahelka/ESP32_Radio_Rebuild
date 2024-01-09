@@ -4,12 +4,11 @@
 #include <Bounce2.h>
 #include <ArduinoNvs.h>
 #include <Wire.h>
-#include <hd44780.h>
-#include <hd44780ioClass/hd44780_I2Cexp.h>
+#include <U8x8lib.h>
 #include <Fsm.h>
 
 //Declare LCD
-extern hd44780_I2Cexp lcd;
+extern U8X8_SH1106_128X64_NONAME_HW_I2C lcd;
 constexpr int LCD_COLS = 16;
 constexpr int LCD_ROWS = 2;
 

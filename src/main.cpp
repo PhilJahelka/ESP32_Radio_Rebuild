@@ -14,9 +14,7 @@ Bounce scroll = Bounce();
 Bounce enter = Bounce();
 //boot mode read from flash
 String read_boot_mode;
-
-hd44780_I2Cexp lcd(0x27);
-int lcd_status;
+U8X8_SH1106_128X64_NONAME_HW_I2C lcd = U8X8_SH1106_128X64_NONAME_HW_I2C();
 
 void setup() {
   // Debugging output
@@ -36,13 +34,9 @@ void setup() {
   enter.interval(100);
   // Setup display
   Wire.begin(I2C_SDA, I2C_SCL);
-  lcd_status = lcd.begin(LCD_COLS, LCD_ROWS);
-  if (lcd_status)
-  {
-    hd44780::fatalError(lcd_status);
-  }
+  lcd.begin();
+  lcd.setFont(u8x8_font_8x13B_1x2_n);
   Serial.println("began lcd");
-  lcd.backlight();
   lcd.clear();
   // Read boot option
   NVS.begin();
