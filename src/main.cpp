@@ -6,7 +6,7 @@ Have setup first detect which mode to boot into and then configure the board app
 //the individual modes for the ESP32 to boot into
 //#include <A2DP_mode.h>
 #include <wifi_mode.h>
-//#include <menu_mode.h>
+#include <menu_mode.h>
 //#include <conf_mode.h>
 
 //create buttons
@@ -35,6 +35,8 @@ void setup() {
   // Setup display
   Wire.begin(I2C_SDA, I2C_SCL);
   lcd.begin();
+  lcd.clearDisplay();
+  lcd.home();
   lcd.setFont(u8x8_font_8x13B_1x2_n);
   Serial.println("began lcd");
   lcd.clear();
@@ -55,11 +57,11 @@ void setup() {
   else if ( read_boot_mode == String(CONF_MODE) )
   {
     conf_config();
-  }
+  }*/
   else if ( read_boot_mode == String(MENU_MODE) )
   {
     menu_config();
-  } */
+  }
   else
   {
     Serial.println("Booted Into Invalid Mode");
@@ -94,11 +96,11 @@ void loop(){
   else if ( read_boot_mode == String(CONF_MODE) )
   {
     conf_loop(pressed_button);
-  }
+  } */
   else if ( read_boot_mode == String(MENU_MODE) )
   {
     menu_loop(pressed_button);
-  } */
+  }
   else
   {
     Serial.println("Loop In Invalid Mode");

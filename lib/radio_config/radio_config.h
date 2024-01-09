@@ -57,5 +57,5 @@ constexpr int ENTER_PIN = 13;
 constexpr int I2S_BCLK = 19;
 constexpr int I2S_DOUT = 18;
 constexpr int I2S_LRC = 5;
-constexpr int I2C_SDA = 32;
-constexpr int I2C_SCL = 33;
+constexpr int I2C_SDA = 21;
+constexpr int I2C_SCL = 22;

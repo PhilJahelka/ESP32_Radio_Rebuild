@@ -191,6 +191,7 @@ void wifi_config(){
     wifi_menu_fsm.add_transition(&state_disp_KCRWMusic, &state_disp_KRCC, SCROLL_TRIG, NULL);
     wifi_menu_fsm.add_transition(&state_disp_KRCC, &state_disp_Custom, SCROLL_TRIG, NULL);
     wifi_menu_fsm.add_transition(&state_disp_Custom, &state_disp_mode, SCROLL_TRIG, NULL);
+    wifi_menu_fsm.add_transition(&state_disp_mode, &state_disp_KXLU, SCROLL_TRIG, NULL);
     wifi_menu_fsm.add_transition(&state_disp_mode, &state_reboot, ENTER_TRIG, NULL);
     //add FSM transitions for audio mode
     wifi_play_fsm.add_transition(&state_wifi_stop, &state_wifi_play, ENTER_TRIG, NULL);
@@ -201,9 +202,6 @@ void wifi_config(){
 };
 
 void wifi_loop(int trigger){
-    if(!playing_station.isEmpty()){
-        audio_ptr->loop();
-    }
     switch (trigger)
     {
     case SCROLL_TRIG:
@@ -211,11 +209,14 @@ void wifi_loop(int trigger){
         wifi_play_fsm.trigger(SCROLL_TRIG);
         break;
     case ENTER_TRIG:
-        wifi_menu_fsm.trigger(SCROLL_TRIG);
-        wifi_play_fsm.trigger(SCROLL_TRIG);
+        wifi_menu_fsm.trigger(ENTER_TRIG);
+        wifi_play_fsm.trigger(ENTER_TRIG);
         break;
     default:
         break;
+    }
+    if(!playing_station.isEmpty()){
+        audio_ptr->loop();
     }
 };
 
