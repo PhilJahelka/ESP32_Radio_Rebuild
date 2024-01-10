@@ -1,6 +1,4 @@
 #include <radio_config.h>
-#include <Audio.h>
-#include <WiFi.h>
 
 //declare entry functions
 void disp_KXLU_on_enter();

@@ -1,6 +1,8 @@
 #include <wifi_mode.h>
 #include <ESP32Ping.h>
 #include <vector>
+#include <WiFi.h>
+#include <Audio.h>
 using namespace std;
 
 //declare important variables
@@ -37,7 +39,7 @@ void disp_KXLU_on_enter()
     station_index = 0;
     display_station = String(stations[station_index].first.c_str());
     lcd.clear();
-    lcd.print(display_station);
+    lcd.drawString(0, 0, display_station.c_str());
     if (display_station == playing_station){
         lcd.setCursor(0, 1);
         lcd.print("Playing");
@@ -101,21 +103,36 @@ void disp_Custom_on_enter()
 //play/stop function
 void wifi_play_on_enter()
 {
+    //check string isn't empty
+    if (stations[station_index].second.empty()){
+        Serial.println("Station string is empty!");
+        return;
+    }
     //update playing station
     playing_station = display_station;
     lcd.setCursor(0, 1);
     lcd.print("Connecting");
-    //try to connect
-    bool connected = audio_ptr->connecttohost(stations[station_index].second.c_str());
-      if (connected){
-        lcd.setCursor(0,1);
-        lcd.print("Playing");
-      } else {
-        //if fail, switch to mute state
-        lcd.setCursor(0,1);
-        lcd.print("Connection Failed!");
-        delay(1000);
-        wifi_play_fsm.trigger(ENTER_TRIG);
+    //try to connect with timeout
+    bool connected = false;
+    Serial.println("connecting to: ");
+    Serial.print(stations[station_index].first.c_str());
+    Serial.print(stations[station_index].second.c_str());
+    connected = audio_ptr->connecttohost(stations[station_index].second.c_str());
+    if (connected){
+    lcd.setCursor(0,1);
+    lcd.print("Playing");
+    Serial.println("connection made to: ");
+    Serial.print(stations[station_index].first.c_str());
+    Serial.print(stations[station_index].second.c_str());
+    } else {
+    //if fail, switch to mute state
+    Serial.println("connection failed to: ");
+    Serial.print(stations[station_index].first.c_str());
+    Serial.print(stations[station_index].second.c_str());
+    lcd.setCursor(0,1);
+    lcd.print("Connection Failed!");
+    delay(1000);
+    wifi_play_fsm.trigger(ENTER_TRIG);
     }
 }
   

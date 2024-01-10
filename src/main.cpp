@@ -37,7 +37,7 @@ void setup() {
   lcd.begin();
   lcd.clearDisplay();
   lcd.home();
-  lcd.setFont(u8x8_font_8x13B_1x2_n);
+  lcd.setFont(u8x8_font_chroma48medium8_r);
   Serial.println("began lcd");
   lcd.clear();
   // Read boot option
