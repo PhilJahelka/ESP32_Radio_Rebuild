@@ -120,6 +120,7 @@ void wifi_play_on_enter()
     connected = audio_ptr->connecttohost(stations[station_index].second.c_str());
     if (connected){
     lcd.setCursor(0,1);
+    lcd.clearLine(1);
     lcd.print("Playing");
     Serial.println("connection made to: ");
     Serial.print(stations[station_index].first.c_str());
@@ -141,7 +142,7 @@ void wifi_stop_on_enter()
 {
     playing_station = "";
     lcd.setCursor(0, 1);
-    lcd.print("                        ");
+    lcd.clearLine(1);
 }
 
 
