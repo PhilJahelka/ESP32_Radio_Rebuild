@@ -3,6 +3,7 @@
 //declare server
 NimBLEServer *pServer = NULL;
 bool deviceConnected = false;
+bool advertising = false;
 //declare variable for things received over BT
 String rxValue;
 
@@ -18,6 +19,7 @@ const static NimBLEUUID DESCRIPTOR_UUID_NAME   = NimBLEUUID((uint16_t)0x2901); /
 class MyServerCallbacks: public NimBLEServerCallbacks {
     void onConnect(NimBLEServer* pServer) {
       deviceConnected = true;
+      advertising = false;
       Serial.println("device connected");
     };
 
@@ -153,9 +155,10 @@ void conf_loop(int trigger) {
         break;
     }
     // disconnecting
-    if (!deviceConnected) {
+    if (!deviceConnected && !advertising) {
         delay(500); // give the bluetooth stack the chance to get things ready
         pServer->startAdvertising(); // restart advertising
+        advertising = true;
         Serial.println("start advertising");
     }
 }
