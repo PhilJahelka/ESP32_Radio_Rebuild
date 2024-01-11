@@ -113,21 +113,17 @@ void wifi_play_on_enter()
     }
     //update playing station
     playing_station = display_station;
+    string disp_name = stations[station_index].first;
+    string stat_URL = stations[station_index].second;
     lcd.setCursor(0, 1);
     lcd.print("Connecting");
     //try to connect with timeout
     bool connected = false;
-    Serial.println("connecting to: ");
-    Serial.print(stations[station_index].first.c_str());
-    Serial.print(stations[station_index].second.c_str());
-    connected = audio_ptr->connecttohost(stations[station_index].second.c_str());
+    connected = audio_ptr->connecttohost(stat_URL.c_str());
     if (connected){
     lcd.setCursor(0,1);
     lcd.clearLine(1);
     lcd.print("Playing");
-    Serial.println("connection made to: ");
-    Serial.print(stations[station_index].first.c_str());
-    Serial.print(stations[station_index].second.c_str());
     } else {
     //if fail, switch to mute state
     Serial.println("connection failed to: ");
@@ -261,12 +257,15 @@ void build_station_list(){
     //read each line of the file and add to stations_list
     while( station_file.available() ){
         string name = station_file.readStringUntil(',').c_str();
+        Serial.println(name.c_str());
         string freq = station_file.readStringUntil(',').c_str();
+        Serial.println(freq.c_str());
         string URL  = station_file.readStringUntil('\n').c_str();
+        Serial.println(URL.c_str());
         stations.push_back(make_pair(name + ", " + freq, URL));
-        stations.push_back(make_pair(name + ", " + freq, URL));
-        custom_URL = NVS.getString(NVS_STAT).c_str();
-        stations.push_back(make_pair("Custom", custom_URL.c_str()));
+        Serial.println(stations.back().first.c_str());
+        Serial.println(stations.back().second.c_str());
     }
-
+    custom_URL = NVS.getString(NVS_STAT).c_str();
+    stations.push_back(make_pair("Custom", custom_URL.c_str()));
 }
