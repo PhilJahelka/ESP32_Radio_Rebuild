@@ -265,9 +265,9 @@ void build_station_list(){
         Serial.println(stations.back().first.c_str());
         Serial.println(stations.back().second.c_str());
     }
+    station_file.close();
     custom_URL = NVS.getString(NVS_STAT).c_str();
     stations.push_back(make_pair("Custom", custom_URL.c_str()));
-    SPIFFS.end();
 }
 
 // optional
