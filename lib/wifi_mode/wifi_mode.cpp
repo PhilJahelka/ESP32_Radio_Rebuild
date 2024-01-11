@@ -3,6 +3,8 @@
 #include <vector>
 #include <WiFi.h>
 #include <Audio.h>
+#include <SPIFFS.h>
+#include <fstream>
 using namespace std;
 
 //declare important variables
@@ -16,6 +18,7 @@ String display_station;
 int station_index = 0;
 void build_station_list();
 vector<pair<string, string>> stations;
+vector<State> station_states;
 
 //define states
 //display
@@ -148,6 +151,13 @@ void wifi_stop_on_enter()
 
 
 void wifi_config(){
+    if(!SPIFFS.begin(true)){
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    lcd.clear();
+    lcd.print("SPIFFS Broken!");
+    delay(1000);
+    force_menu_boot();
+    }
     Serial.println("building station list");
     build_station_list();
     Serial.println("built station list");
@@ -239,12 +249,24 @@ void wifi_loop(int trigger){
 };
 
 void build_station_list(){
-    stations.push_back(make_pair("KXLU, 88.9",       "kxlu.streamguys1.com/kxlu-hi"));
-    stations.push_back(make_pair("LAist, 89.3",      "http://3.88.129.151/southerncalipr-kpccfmmp3-imc?session-id=9a67f16aa32b96fef88ba726540a74cb&source=kpcc"));
-    stations.push_back(make_pair("KCRW Live, 89.9",  "media.kcrw.com/pls/kcrwsimulcast.pls"));
-    stations.push_back(make_pair("KCRW Music, 89.9", "media.kcrw.com/pls/kcrwmusic.pls"));
-    stations.push_back(make_pair("KRCC, 91.5",       "streams.krcc.org/krcc_mp3"));
-    //read custom station url and add to station vector
-    custom_URL = NVS.getString(NVS_STAT).c_str();
-    stations.push_back(make_pair("Custom", custom_URL.c_str()));
+    //open file
+    File station_file = SPIFFS.open("/stations.csv");
+    //check file exists, if not boot to menu
+    if(!station_file){
+    Serial.println("Failed to open station file for reading");
+    lcd.clear();
+    lcd.print("No Station File");
+    force_menu_boot();
+    }
+    //read each line of the file and add to stations_list
+    while( station_file.available() ){
+        string name = station_file.readStringUntil(',').c_str();
+        string freq = station_file.readStringUntil(',').c_str();
+        string URL  = station_file.readStringUntil('\n').c_str();
+        stations.push_back(make_pair(name + ", " + freq, URL));
+        stations.push_back(make_pair(name + ", " + freq, URL));
+        custom_URL = NVS.getString(NVS_STAT).c_str();
+        stations.push_back(make_pair("Custom", custom_URL.c_str()));
+    }
+
 }
