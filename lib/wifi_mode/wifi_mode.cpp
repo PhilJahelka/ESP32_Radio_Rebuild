@@ -113,13 +113,11 @@ void wifi_play_on_enter()
     }
     //update playing station
     playing_station = display_station;
-    string disp_name = stations[station_index].first;
-    string stat_URL = stations[station_index].second;
     lcd.setCursor(0, 1);
     lcd.print("Connecting");
     //try to connect with timeout
     bool connected = false;
-    connected = audio_ptr->connecttohost(stat_URL.c_str());
+    connected = audio_ptr->connecttohost(stations[station_index].second.c_str());
     if (connected){
     lcd.setCursor(0,1);
     lcd.clearLine(1);
@@ -169,6 +167,7 @@ void wifi_config(){
     audio_ptr->setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
     Serial.println("pins set");
     audio_ptr->setVolume(10);
+    audio_ptr->setConnectionTimeout(1000, 2000);
     Serial.println("volume set");
     Serial.println("audio init'd");
     //start connecting to wifi
@@ -268,4 +267,34 @@ void build_station_list(){
     }
     custom_URL = NVS.getString(NVS_STAT).c_str();
     stations.push_back(make_pair("Custom", custom_URL.c_str()));
+    SPIFFS.end();
+}
+
+// optional
+void audio_info(const char *info){
+    Serial.print("info        "); Serial.println(info);
+}
+void audio_id3data(const char *info){  //id3 metadata
+    Serial.print("id3data     ");Serial.println(info);
+}
+void audio_eof_mp3(const char *info){  //end of file
+    Serial.print("eof_mp3     ");Serial.println(info);
+}
+void audio_showstation(const char *info){
+    Serial.print("station     ");Serial.println(info);
+}
+void audio_showstreamtitle(const char *info){
+    Serial.print("streamtitle ");Serial.println(info);
+}
+void audio_bitrate(const char *info){
+    Serial.print("bitrate     ");Serial.println(info);
+}
+void audio_commercial(const char *info){  //duration in sec
+    Serial.print("commercial  ");Serial.println(info);
+}
+void audio_icyurl(const char *info){  //homepage
+    Serial.print("icyurl      ");Serial.println(info);
+}
+void audio_lasthost(const char *info){  //stream URL played
+    Serial.print("lasthost    ");Serial.println(info);
 }
