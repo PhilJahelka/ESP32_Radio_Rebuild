@@ -5,18 +5,19 @@
 #include <Audio.h>
 #include <SPIFFS.h>
 #include <fstream>
+#include <MemoryHexDump.h>
 using namespace std;
-
+/*
+It is critical that the CSV defining the stations have \n termination, NOT \r\n
+*/
 //declare important variables
 Audio* audio_ptr;
-String SSID;
-String PSWD;
-int wifi_timeout = 10; //try connecting to WiFi for 10s
-String custom_URL;
-String playing_station;
-String display_station;
-int station_index = 0;
 void build_station_list();
+int wifi_timeout = 10; //try connecting to WiFi for 10s
+string custom_URL;
+string playing_station;
+string display_station;
+int station_index = 0;
 vector<pair<string, string>> stations;
 vector<State> station_states;
 
@@ -40,7 +41,7 @@ Fsm wifi_play_fsm(&state_wifi_stop);
 void disp_KXLU_on_enter()
 {
     station_index = 0;
-    display_station = String(stations[station_index].first.c_str());
+    display_station = stations[station_index].first.c_str();
     lcd.clear();
     lcd.drawString(0, 0, display_station.c_str());
     if (display_station == playing_station){
@@ -51,9 +52,9 @@ void disp_KXLU_on_enter()
 void disp_LAist_on_enter()
 {
     station_index = 1;
-    display_station = String(stations[station_index].first.c_str());
+    display_station = stations[station_index].first.c_str();
     lcd.clear();
-    lcd.print(display_station);
+    lcd.print(display_station.c_str());
     if (display_station == playing_station){
         lcd.setCursor(0, 1);
         lcd.print("Playing");
@@ -62,9 +63,9 @@ void disp_LAist_on_enter()
 void disp_KCRWLive_on_enter()
 {
     station_index = 2;
-    display_station = String(stations[station_index].first.c_str());
+    display_station = stations[station_index].first.c_str();
     lcd.clear();
-    lcd.print(display_station);
+    lcd.print(display_station.c_str());
     if (display_station == playing_station){
         lcd.setCursor(0, 1);
         lcd.print("Playing");
@@ -73,9 +74,9 @@ void disp_KCRWLive_on_enter()
 void disp_KCRWMusic_on_enter()
 {
     station_index = 3;
-    display_station = String(stations[station_index].first.c_str());
+    display_station = stations[station_index].first.c_str();
     lcd.clear();
-    lcd.print(display_station);
+    lcd.print(display_station.c_str());
     if (display_station == playing_station){
         lcd.setCursor(0, 1);
         lcd.print("Playing");
@@ -84,9 +85,9 @@ void disp_KCRWMusic_on_enter()
 void disp_KRCC_on_enter()
 {
     station_index = 4;
-    display_station = String(stations[station_index].first.c_str());
+    display_station = stations[station_index].first.c_str();
     lcd.clear();
-    lcd.print(display_station);
+    lcd.print(display_station.c_str());
     if (display_station == playing_station){
         lcd.setCursor(0, 1);
         lcd.print("Playing");
@@ -95,9 +96,9 @@ void disp_KRCC_on_enter()
 void disp_Custom_on_enter()
 {
     station_index = 5;
-    display_station = String(stations[station_index].first.c_str());
+    display_station = stations[station_index].first.c_str();
     lcd.clear();
-    lcd.print(display_station);
+    lcd.print(display_station.c_str());
     if (display_station == playing_station){
         lcd.setCursor(0, 1);
         lcd.print("Playing");
@@ -113,11 +114,15 @@ void wifi_play_on_enter()
     }
     //update playing station
     playing_station = display_station;
+    const char* URL = stations[station_index].second.c_str();
     lcd.setCursor(0, 1);
     lcd.print("Connecting");
     //try to connect with timeout
     bool connected = false;
-    connected = audio_ptr->connecttohost(stations[station_index].second.c_str());
+    Serial.println("Attempting to connect to:");
+    Serial.println(URL);
+    Serial.println(playing_station.c_str());
+    connected = audio_ptr->connecttohost(URL);
     if (connected){
     lcd.setCursor(0,1);
     lcd.clearLine(1);
@@ -126,7 +131,7 @@ void wifi_play_on_enter()
     //if fail, switch to mute state
     Serial.println("connection failed to: ");
     Serial.print(stations[station_index].first.c_str());
-    Serial.print(stations[station_index].second.c_str());
+    Serial.print(URL);
     lcd.setCursor(0,1);
     lcd.print("Connection Failed!");
     delay(1000);
@@ -158,9 +163,13 @@ void wifi_config(){
     lcd.clear();
     lcd.print("Internet Mode");
     //read network credentials
-    SSID = NVS.getString(NVS_SSID);
-    PSWD = NVS.getString(NVS_PSWD);
+    string SSID = string( NVS.getString(NVS_SSID).c_str() );
+    string PSWD = string( NVS.getString(NVS_PSWD).c_str() );
     Serial.println("read wifi credentials");
+    Serial.print("SSID is: ");
+    Serial.println(SSID.c_str());
+    Serial.print("PSWD is: ");
+    Serial.println(PSWD.c_str());
     //create the audio system
     audio_ptr = new Audio();
     Serial.println("made new audio");
@@ -177,7 +186,7 @@ void wifi_config(){
     WiFi.disconnect();
     WiFi.softAPdisconnect(true);
     WiFi.mode(WIFI_STA);
-    WiFi.begin(SSID, PSWD);
+    WiFi.begin(SSID.c_str(), PSWD.c_str());
     int wifi_start_time = millis();
     //connection timeout management
     while (WiFi.status() != WL_CONNECTED) {
@@ -238,7 +247,7 @@ void wifi_loop(int trigger){
     default:
         break;
     }
-    if(!playing_station.isEmpty()){
+    if(playing_station.empty() != true){
         audio_ptr->loop();
     }
 };
@@ -256,18 +265,15 @@ void build_station_list(){
     //read each line of the file and add to stations_list
     while( station_file.available() ){
         string name = station_file.readStringUntil(',').c_str();
-        Serial.println(name.c_str());
         string freq = station_file.readStringUntil(',').c_str();
-        Serial.println(freq.c_str());
         string URL  = station_file.readStringUntil('\n').c_str();
-        Serial.println(URL.c_str());
         stations.push_back(make_pair(name + ", " + freq, URL));
         Serial.println(stations.back().first.c_str());
         Serial.println(stations.back().second.c_str());
     }
     station_file.close();
     custom_URL = NVS.getString(NVS_STAT).c_str();
-    stations.push_back(make_pair("Custom", custom_URL.c_str()));
+    stations.push_back(make_pair("Custom", custom_URL));
 }
 
 // optional
