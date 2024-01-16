@@ -5,7 +5,7 @@
 #include <ArduinoNvs.h>
 #include <Wire.h>
 #include <U8x8lib.h>
-#include <Fsm.h>
+#include <SimpleFSM.h>
 
 //Declare LCD
 extern U8X8_SH1106_128X64_NONAME_HW_I2C lcd;

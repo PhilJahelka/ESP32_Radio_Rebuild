@@ -5,7 +5,7 @@ BluetoothA2DPSink a2dp_sink;
 //define states
 State state_disp_bt(&disp_bt_on_enter, NULL, NULL);
 //init machine
-Fsm a2dp_fsm(&state_disp_bt);
+SimpleFSM a2dp_fsm(&state_disp_bt);
 //entry functions
 void disp_bt_on_enter()
 {

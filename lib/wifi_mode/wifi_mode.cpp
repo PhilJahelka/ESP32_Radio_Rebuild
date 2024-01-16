@@ -5,53 +5,44 @@
 #include <Audio.h>
 #include <SPIFFS.h>
 #include <fstream>
-#include <MemoryHexDump.h>
 using namespace std;
 /*
 It is critical that the CSV defining the stations have \n termination, NOT \r\n
 */
+//This has two FSMs, one for handling the display, another for play/pause state
 //declare important variables
+//pointer to eventually initialized audio system
 Audio* audio_ptr;
-void build_station_list();
-int wifi_timeout = 10; //try connecting to WiFi for 10s
-string custom_URL;
-string playing_station;
-string display_station;
-int station_index = 0;
-vector<pair<string, string>> stations;
-vector<State> station_states;
 
-//define states
-//display
-State state_disp_KXLU(&disp_KXLU_on_enter, NULL, NULL);
-State state_disp_LAist(&disp_LAist_on_enter, NULL, NULL);
-State state_disp_KCRWLive(&disp_KCRWLive_on_enter, NULL, NULL);
-State state_disp_KCRWMusic(&disp_KCRWMusic_on_enter, NULL, NULL);
-State state_disp_KRCC(&disp_KRCC_on_enter, NULL, NULL);
-State state_disp_Custom(&disp_Custom_on_enter, NULL, NULL);
-//playing
+int wifi_timeout = 10; //try connecting to WiFi for 10s
+string custom_URL; //custom station URL from NVS
+string playing_station; //currently playing station
+string display_station; //station being displayed
+int num_stations = 0; //total number of stations including SPIFFS and Custom
+void build_station_list(); //create vector of stations 
+vector<pair<string, string>> stations;
+void build_display_FSM(); //create vector of states for display FSM
+vector<State> display_states;
+
+//what to do when entering a new display state
+void disp_station_on_enter();
+
+//handle play/pause FSM
+void wifi_play_on_enter();
+void wifi_stop_on_enter();
+
+//States for play/pause FSM
 State state_wifi_play(&wifi_play_on_enter, NULL, NULL);
 State state_wifi_stop(&wifi_stop_on_enter, NULL, NULL);
 
-//FSMs
-Fsm wifi_menu_fsm(&state_disp_KXLU);
-Fsm wifi_play_fsm(&state_wifi_stop);
+//FSM declarations
+Fsm  wifi_play_fsm(&state_wifi_stop);
+Fsm* wifi_menu_fsm_ptr;
 
 //entry functions for display
-void disp_KXLU_on_enter()
+
+void disp_station_on_enter()
 {
-    station_index = 0;
-    display_station = stations[station_index].first.c_str();
-    lcd.clear();
-    lcd.drawString(0, 0, display_station.c_str());
-    if (display_station == playing_station){
-        lcd.setCursor(0, 1);
-        lcd.print("Playing");
-    }
-}
-void disp_LAist_on_enter()
-{
-    station_index = 1;
     display_station = stations[station_index].first.c_str();
     lcd.clear();
     lcd.print(display_station.c_str());
@@ -60,50 +51,7 @@ void disp_LAist_on_enter()
         lcd.print("Playing");
     }
 }
-void disp_KCRWLive_on_enter()
-{
-    station_index = 2;
-    display_station = stations[station_index].first.c_str();
-    lcd.clear();
-    lcd.print(display_station.c_str());
-    if (display_station == playing_station){
-        lcd.setCursor(0, 1);
-        lcd.print("Playing");
-    }
-}
-void disp_KCRWMusic_on_enter()
-{
-    station_index = 3;
-    display_station = stations[station_index].first.c_str();
-    lcd.clear();
-    lcd.print(display_station.c_str());
-    if (display_station == playing_station){
-        lcd.setCursor(0, 1);
-        lcd.print("Playing");
-    }
-}
-void disp_KRCC_on_enter()
-{
-    station_index = 4;
-    display_station = stations[station_index].first.c_str();
-    lcd.clear();
-    lcd.print(display_station.c_str());
-    if (display_station == playing_station){
-        lcd.setCursor(0, 1);
-        lcd.print("Playing");
-    }
-}
-void disp_Custom_on_enter()
-{
-    station_index = 5;
-    display_station = stations[station_index].first.c_str();
-    lcd.clear();
-    lcd.print(display_station.c_str());
-    if (display_station == playing_station){
-        lcd.setCursor(0, 1);
-        lcd.print("Playing");
-    }
-}
+
 //play/stop function
 void wifi_play_on_enter()
 {
@@ -216,20 +164,12 @@ void wifi_config(){
       force_menu_boot();
     }
     lcd.clear();
-    //add FSM transitions for display and boot menu
-    wifi_menu_fsm.add_transition(&state_disp_KXLU, &state_disp_LAist, SCROLL_TRIG, NULL);
-    wifi_menu_fsm.add_transition(&state_disp_LAist, &state_disp_KCRWLive, SCROLL_TRIG, NULL);
-    wifi_menu_fsm.add_transition(&state_disp_KCRWLive, &state_disp_KCRWMusic, SCROLL_TRIG, NULL);
-    wifi_menu_fsm.add_transition(&state_disp_KCRWMusic, &state_disp_KRCC, SCROLL_TRIG, NULL);
-    wifi_menu_fsm.add_transition(&state_disp_KRCC, &state_disp_Custom, SCROLL_TRIG, NULL);
-    wifi_menu_fsm.add_transition(&state_disp_Custom, &state_disp_mode, SCROLL_TRIG, NULL);
-    wifi_menu_fsm.add_transition(&state_disp_mode, &state_disp_KXLU, SCROLL_TRIG, NULL);
-    wifi_menu_fsm.add_transition(&state_disp_mode, &state_reboot, ENTER_TRIG, NULL);
+    build_display_FSM();
     //add FSM transitions for audio mode
     wifi_play_fsm.add_transition(&state_wifi_stop, &state_wifi_play, ENTER_TRIG, NULL);
     wifi_play_fsm.add_transition(&state_wifi_play, &state_wifi_stop, ENTER_TRIG, NULL);
     //start FSM
-    wifi_menu_fsm.run_machine();
+    wifi_menu_fsm_ptr->run_machine();
     wifi_play_fsm.run_machine();
 };
 
@@ -237,11 +177,11 @@ void wifi_loop(int trigger){
     switch (trigger)
     {
     case SCROLL_TRIG:
-        wifi_menu_fsm.trigger(SCROLL_TRIG);
+        wifi_menu_fsm_ptr->trigger(SCROLL_TRIG);
         wifi_play_fsm.trigger(SCROLL_TRIG);
         break;
     case ENTER_TRIG:
-        wifi_menu_fsm.trigger(ENTER_TRIG);
+        wifi_menu_fsm_ptr->trigger(ENTER_TRIG);
         wifi_play_fsm.trigger(ENTER_TRIG);
         break;
     default:
@@ -274,6 +214,7 @@ void build_station_list(){
     station_file.close();
     custom_URL = NVS.getString(NVS_STAT).c_str();
     stations.push_back(make_pair("Custom", custom_URL));
+    num_stations = stations.size();
 }
 
 // optional
@@ -303,4 +244,29 @@ void audio_icyurl(const char *info){  //homepage
 }
 void audio_lasthost(const char *info){  //stream URL played
     Serial.print("lasthost    ");Serial.println(info);
+}
+
+//want function that generates States from the stations vector and tacks on the disp_mode state
+//use two different entry functions. One for if it's a radio station, and another for the mode
+
+void build_display_FSM(){
+    //generate a state of each station in the stations vector
+    for( int i = 0; i < num_stations; i++)
+    {
+        display_states.push_back( State(&disp_station_on_enter, NULL, NULL) );
+    }
+    //add the menu mode state
+    display_states.push_back( state_disp_mode );
+    //initialize the FSM
+    wifi_menu_fsm_ptr = new Fsm(&display_states[0]);
+    //add transitions between playable stations
+    for( int i = 0; i < num_stations - 1; i++)
+    {
+        wifi_menu_fsm_ptr->add_transition(&display_states[i], &display_states[i+1], SCROLL_TRIG, NULL);
+    }
+    //add transition to menu mode
+    wifi_menu_fsm_ptr->add_transition(&display_states.back(), &state_disp_mode, SCROLL_TRIG, NULL);
+    //close the menu loop
+    wifi_menu_fsm_ptr->add_transition(&state_disp_mode, &display_states.front(), SCROLL_TRIG, NULL);
+    wifi_menu_fsm_ptr->run_machine();
 }
