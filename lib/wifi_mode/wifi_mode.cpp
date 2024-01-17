@@ -32,12 +32,12 @@ void wifi_play_on_enter();
 void wifi_stop_on_enter();
 
 //States for play/pause FSM
-State state_wifi_play(&wifi_play_on_enter, NULL, NULL);
-State state_wifi_stop(&wifi_stop_on_enter, NULL, NULL);
+State state_wifi_play("playing", wifi_play_on_enter, NULL, NULL);
+State state_wifi_stop("stopped", wifi_stop_on_enter, NULL, NULL);
 
 //FSM declarations
-Fsm  wifi_play_fsm(&state_wifi_stop);
-Fsm* wifi_menu_fsm_ptr;
+SimpleFSM wifi_play_fsm(&state_wifi_stop);
+SimpleFSM wifi_menu_fsm(&display_states[0]);
 
 //entry functions for display
 
@@ -166,22 +166,22 @@ void wifi_config(){
     lcd.clear();
     build_display_FSM();
     //add FSM transitions for audio mode
-    wifi_play_fsm.add_transition(&state_wifi_stop, &state_wifi_play, ENTER_TRIG, NULL);
-    wifi_play_fsm.add_transition(&state_wifi_play, &state_wifi_stop, ENTER_TRIG, NULL);
+    wifi_play_fsm.add( {Transition(&state_wifi_stop, &state_wifi_play, ENTER_TRIG, NULL)}, 1);
+    wifi_play_fsm.add( {Transition(&state_wifi_play, &state_wifi_stop, ENTER_TRIG, NULL)}, 1);
     //start FSM
-    wifi_menu_fsm_ptr->run_machine();
-    wifi_play_fsm.run_machine();
+    wifi_menu_fsm.run();
+    wifi_play_fsm.run();
 };
 
 void wifi_loop(int trigger){
     switch (trigger)
     {
     case SCROLL_TRIG:
-        wifi_menu_fsm_ptr->trigger(SCROLL_TRIG);
+        wifi_menu_fsm.trigger(SCROLL_TRIG);
         wifi_play_fsm.trigger(SCROLL_TRIG);
         break;
     case ENTER_TRIG:
-        wifi_menu_fsm_ptr->trigger(ENTER_TRIG);
+        wifi_menu_fsm.trigger(ENTER_TRIG);
         wifi_play_fsm.trigger(ENTER_TRIG);
         break;
     default:
@@ -253,16 +253,15 @@ void build_display_FSM(){
     //generate a state of each station in the stations vector
     for( int i = 0; i < num_stations; i++)
     {
-        display_states.push_back( State(&disp_station_on_enter, NULL, NULL) );
+        display_states.push_back( State(stations[i].first.c_str(), disp_station_on_enter, NULL, NULL) );
     }
     //add the menu mode state
     display_states.push_back( state_disp_mode );
-    //initialize the FSM
-    wifi_menu_fsm_ptr = new Fsm(&display_states[0]);
     //add transitions between playable stations
     for( int i = 0; i < num_stations - 1; i++)
     {
-        wifi_menu_fsm_ptr->add_transition(&display_states[i], &display_states[i+1], SCROLL_TRIG, NULL);
+        wifi_menu_fsm.add
+        (&display_states[i], &display_states[i+1], SCROLL_TRIG, NULL);
     }
     //add transition to menu mode
     wifi_menu_fsm_ptr->add_transition(&display_states.back(), &state_disp_mode, SCROLL_TRIG, NULL);
