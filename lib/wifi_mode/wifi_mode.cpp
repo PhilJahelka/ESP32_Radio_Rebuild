@@ -36,8 +36,8 @@ State state_wifi_play("playing", wifi_play_on_enter, NULL, NULL);
 State state_wifi_stop("stopped", wifi_stop_on_enter, NULL, NULL);
 
 //FSM declarations
-SimpleFSM wifi_play_fsm(&state_wifi_stop);
-SimpleFSM wifi_menu_fsm(&display_states[0]);
+SimpleFSM wifi_play_fsm();
+SimpleFSM wifi_menu_fsm();
 
 //entry functions for display
 
@@ -166,8 +166,12 @@ void wifi_config(){
     lcd.clear();
     build_display_FSM();
     //add FSM transitions for audio mode
-    wifi_play_fsm.add( {Transition(&state_wifi_stop, &state_wifi_play, ENTER_TRIG, NULL)}, 1);
-    wifi_play_fsm.add( {Transition(&state_wifi_play, &state_wifi_stop, ENTER_TRIG, NULL)}, 1);
+    Transition play_transitions[] = {
+        Transition(&state_wifi_stop, &state_wifi_play, ENTER_TRIG, NULL),
+        Transition(&state_wifi_play, &state_wifi_stop, ENTER_TRIG, NULL)
+    };
+    wifi_play_fsm.add( play_transitions, 2);
+    wifi_play_fsm.setInitialState(&state_wifi_stop)
     //start FSM
     wifi_menu_fsm.run();
     wifi_play_fsm.run();
