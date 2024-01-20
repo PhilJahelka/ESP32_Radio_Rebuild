@@ -6,3 +6,5 @@ Use SPIFFS for radio station list
 Something wrong with wifi mode not detecting the PSRAM
 
 fix connection failed loop in wifi
+
+Wifi detect disconnect and attempt reconnect
