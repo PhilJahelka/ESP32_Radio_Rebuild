@@ -11,6 +11,8 @@
 extern U8X8_SH1106_128X64_NONAME_HW_I2C lcd;
 constexpr int LCD_COLS = 16;
 constexpr int LCD_ROWS = 2;
+constexpr int FLIP_MODE = 1;
+
 
 //NVS names
 constexpr char NVS_MODE[] = "boot_mode";

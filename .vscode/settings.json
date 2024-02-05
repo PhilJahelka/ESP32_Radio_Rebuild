@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "cache.h": "c",
+        "esp32-hal.h": "c",
+        "sdkconfig.h": "c"
+    },
+    "C_Cpp.dimInactiveRegions": true
+}

@@ -33,8 +33,10 @@ void setup() {
   Serial.println(ENTER_PIN);
   enter.interval(100);
   // Setup display
-  Wire.begin(I2C_SDA, I2C_SCL);
+  Wire.begin(I2C_SDA, I2C_SCL);  
   lcd.begin();
+  //for the kitchen orientation
+  lcd.setFlipMode(FLIP_MODE);
   lcd.clearDisplay();
   lcd.home();
   lcd.setFont(u8x8_font_chroma48medium8_r);

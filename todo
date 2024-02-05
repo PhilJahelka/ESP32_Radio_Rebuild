@@ -8,3 +8,5 @@ Something wrong with wifi mode not detecting the PSRAM
 fix connection failed loop in wifi
 
 Wifi detect disconnect and attempt reconnect
+
+Fix PSRAM not detected
