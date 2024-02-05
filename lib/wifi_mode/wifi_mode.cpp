@@ -15,6 +15,7 @@ String playing_station;
 String display_station;
 int station_index = 0;
 void build_station_list();
+void wifi_connect();
 vector<pair<string, string>> stations;
 
 //define states
@@ -132,8 +133,6 @@ void wifi_play_on_enter()
     Serial.print(stations[station_index].second.c_str());
     lcd.setCursor(0,1);
     lcd.print("Connection Failed!");
-    delay(1000);
-    wifi_play_fsm.trigger(ENTER_TRIG);
     }
 }
   
@@ -167,40 +166,7 @@ void wifi_config(){
     Serial.println("audio init'd");
     //start connecting to wifi
     Serial.println("Connecting to WiFi");
-    lcd.setCursor(0,1);
-    lcd.print("Connecting to WiFi");
-    WiFi.disconnect();
-    WiFi.softAPdisconnect(true);
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(SSID, PSWD);
-    int wifi_start_time = millis();
-    //connection timeout management
-    while (WiFi.status() != WL_CONNECTED) {
-      Serial.println("...Connecting to WiFi");
-      delay(500);
-      if ( (millis() - wifi_start_time) > (wifi_timeout * 1000) ){
-        Serial.println("Can't connect to WiFi!");
-        lcd.clear();
-        lcd.print("No Wifi!");
-        lcd.setCursor(0,1);
-        lcd.print("Booting Menu");
-        force_menu_boot();
-      }
-    }
-    Serial.println("Connected to network");
-    //internet connection validation
-    bool ret = Ping.ping("www.google.com");
-    if (ret == true){
-      lcd.clear();
-      lcd.print("Found Google");
-      delay(500);
-    }
-    else{
-      lcd.clear();
-      lcd.print("Can't Find Google");
-      delay(500);
-      force_menu_boot();
-    }
+    wifi_connect();
     lcd.clear();
     //add FSM transitions for display and boot menu
     wifi_menu_fsm.add_transition(&state_disp_KXLU, &state_disp_LAist, SCROLL_TRIG, NULL);
@@ -235,6 +201,10 @@ void wifi_loop(int trigger){
     }
     if(!playing_station.isEmpty()){
         audio_ptr->loop();
+    }
+    if(WiFi.status() != WL_CONNECTED)
+    {
+        wifi_connect();
     }
 };
 
@@ -276,4 +246,41 @@ void audio_icyurl(const char *info){  //homepage
 }
 void audio_lasthost(const char *info){  //stream URL played
     Serial.print("lasthost    ");Serial.println(info);
+}
+
+void wifi_connect(){
+    lcd.setCursor(0,1);
+    lcd.print("Connecting to WiFi");
+    WiFi.disconnect();
+    WiFi.softAPdisconnect(true);
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(SSID, PSWD);
+    int wifi_start_time = millis();
+    //connection timeout management
+    while (WiFi.status() != WL_CONNECTED) {
+      Serial.println("...Connecting to WiFi");
+      delay(500);
+      if ( (millis() - wifi_start_time) > (wifi_timeout * 1000) ){
+        Serial.println("Can't connect to WiFi!");
+        lcd.clear();
+        lcd.print("No Wifi!");
+        lcd.setCursor(0,1);
+        lcd.print("Booting Menu");
+        force_menu_boot();
+      }
+    }
+    Serial.println("Connected to network");
+    //internet connection validation
+    bool ret = Ping.ping("www.google.com");
+    if (ret == true){
+      lcd.clear();
+      lcd.print("Found Google");
+      delay(500);
+    }
+    else{
+      lcd.clear();
+      lcd.print("Can't Find Google");
+      delay(500);
+      force_menu_boot();
+    }
 }

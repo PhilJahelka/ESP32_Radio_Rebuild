@@ -5,8 +5,6 @@ Use SPIFFS for radio station list
   Will need to really rethink the state machine portion; vector of states created during setup function?
 Something wrong with wifi mode not detecting the PSRAM
 
-fix connection failed loop in wifi
+fix connection failed loop in wifi fixed(?)
 
-Wifi detect disconnect and attempt reconnect
-
-Fix PSRAM not detected
+Wifi detect disconnect and attempt reconnect fixed(?)
